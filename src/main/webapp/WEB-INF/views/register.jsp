@@ -164,6 +164,7 @@
 				</sec:authorize>
 				</c:when>
 				<c:otherwise>
+				<label for="role" class="sr-only">Role</label> 
 				<input type="text" id="role" name="role" class="form-control"
 					placeholder="Role" required/>
 				</c:otherwise>	
