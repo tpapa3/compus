@@ -147,7 +147,6 @@
 				</c:choose>
 			</p>
 			<p>
-				<label for="role" class="sr-only">Role</label> 
 			<c:choose>
 				<c:when test="${(secretary!=null) || (teacher!=null) || (student!=null)}">
 				<sec:authorize access="hasRole('SECRETARY')"> 
