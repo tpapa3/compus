@@ -3,12 +3,15 @@ package studentweb.compus.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -21,8 +24,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Student {
     
 	
-	
-	private static final long serialVersionUID = 1L;
 	private int id;
 	private String firstname;
 	private String surname;
@@ -33,16 +34,8 @@ public class Student {
 	
 	private Set<Course> courses = new HashSet<Course>();
 	
-	@ManyToMany(mappedBy="students")
-	@JsonManagedReference
-	public Set<Course> getCourses() {
-		return courses;
-	}
-      
-	public void setCourses(Set<Course> courses) {
-		this.courses = courses;
-	}
-
+	private Set<Doc> files = new HashSet<Doc>();
+	
 	public Student() {
 		
 	}
@@ -109,4 +102,23 @@ public class Student {
 		this.email = email;
 	}
 	
+	@ManyToMany(mappedBy="students")
+	@JsonManagedReference
+	public Set<Course> getCourses() {
+		return courses;
+	}
+      
+	public void setCourses(Set<Course> courses) {
+		this.courses = courses;
+	}
+    
+	@OneToMany(mappedBy="student",cascade=CascadeType.REMOVE, orphanRemoval=true,fetch=FetchType.LAZY)
+	@JsonManagedReference
+	public Set<Doc> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<Doc> files) {
+		this.files = files;
+	}
 }

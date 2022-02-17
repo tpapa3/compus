@@ -50,7 +50,6 @@ public class SecretaryController {
 	
 	
 	@RequestMapping(value="/TeacherPage",method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
-	@Transactional
 	public ResponseEntity<String> TeacherCourse(@RequestParam(name="idt",required=false) String idt,@RequestParam(name="idc",required=false) String idc){
 		
 	    System.out.println(idt+" "+idc);	
@@ -77,7 +76,6 @@ public class SecretaryController {
 		return ResponseEntity.status(HttpStatus.OK).body("the data saved in database");
 	}
 	@RequestMapping(value="/StudentPage",method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
-	@Transactional
 	public ResponseEntity<String> StudentCourse(@RequestParam(name="ids",required=false) String ids, @RequestParam(name="idc",required=false) String idc){
 		
 		
@@ -115,7 +113,6 @@ public class SecretaryController {
 		
 	}
 	@RequestMapping(value="/changeData",method=RequestMethod.POST)
-	@Transactional
 	public void SecretaryUpload(@RequestParam String id,@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
 			 @RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password,
 			 @RequestParam("role") String role,HttpServletResponse response) throws IOException {

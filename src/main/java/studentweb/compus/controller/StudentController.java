@@ -26,10 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import studentweb.compus.entity.Course;
+import studentweb.compus.entity.Doc;
 import studentweb.compus.entity.Student;
 import studentweb.compus.repository.CourseRepository;
 import studentweb.compus.repository.StudentRepository;
+import studentweb.compus.service.DocStorageService;
 
 @Controller
 @RequestMapping("/Student")
@@ -39,8 +43,10 @@ public class StudentController {
 	private StudentRepository studentrepo;
 	@Autowired
 	private CourseRepository courserepo;
+	@Autowired
+	private DocStorageService  docservice;
 	@PersistenceContext
-	EntityManager em;
+	 EntityManager em;
 
 @RequestMapping(value="/update", method=RequestMethod.GET)
 public String StudentUpdate(@RequestParam String id,Model model) {
@@ -62,11 +68,10 @@ public String StudentCourse(@RequestParam String id,Model model) {
 }
 
 @RequestMapping(value="/courseAdd", method=RequestMethod.GET)
-@Transactional
-public ResponseEntity<Course> AddCourse(@RequestParam(value="idc",required=false) Integer idc,@RequestParam(value="ids",required=false) Integer ids) 
+public ResponseEntity<Course> AddCourse(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false) String ids) 
 {
-	Course course = courserepo.findById(idc).get();
-	Student student = studentrepo.findById(ids).get();
+	Course course = courserepo.findById(Integer.parseInt(idc)).get();
+	Student student = studentrepo.findById(Integer.parseInt(ids)).get();
 	Set<Course> studentCourses= student.getCourses();
 	for(Course stdCourse: studentCourses) {
 	   if(course == stdCourse) {
@@ -87,11 +92,10 @@ public ResponseEntity<Course> AddCourse(@RequestParam(value="idc",required=false
 }
 
 @RequestMapping(value="/courseDelete", method=RequestMethod.GET)
-@Transactional
-public ResponseEntity<Student> DeleteCourse(@RequestParam(value="idc",required=false) Integer idc,@RequestParam(value="ids",required=false) Integer ids){
+public ResponseEntity<Student> DeleteCourse(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false) String ids){
 	 
-	 Course course = courserepo.findById(idc).get();
-	 Student student = studentrepo.findById(ids).get();
+	 Course course = courserepo.findById(Integer.parseInt(idc)).get();
+	 Student student = studentrepo.findById(Integer.parseInt(ids)).get();
 	 Set<Course> studentCourses = student.getCourses();
 	 
 	Query q =em.createNativeQuery("DELETE FROM student_course sc where sc.course_id=? and sc.student_id=?");
@@ -104,9 +108,28 @@ public ResponseEntity<Student> DeleteCourse(@RequestParam(value="idc",required=f
 	
 	return ResponseEntity.status(HttpStatus.OK).body(student);
  }
- 
+
+@RequestMapping(value="/homework", method=RequestMethod.GET)
+public String Homework(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false)String ids,Model model) {
+	 Course course = courserepo.findById(Integer.parseInt(idc)).get();
+	 Student student = studentrepo.findById(Integer.parseInt(ids)).get();
+	 List<Course> courses= courserepo.findAll();
+	
+	 model.addAttribute("course",course);
+	 model.addAttribute("student",student);
+	 model.addAttribute("courses",courses);
+	 
+	 return "Studenthomework";
+}
+
+@RequestMapping(value="/homework", method=RequestMethod.POST)
+public ResponseEntity<Doc> UploadFile(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false)String ids,@RequestParam("file") MultipartFile file){
+	Doc dbfile= docservice.storeFile(idc, ids, file);
+	
+	return  ResponseEntity.status(HttpStatus.OK).body(dbfile);
+}
+
 @RequestMapping(value="/changeData",method=RequestMethod.POST)
-@Transactional
 public void StudentUpload(@RequestParam String id,@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
 		 @RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password,
 		 @RequestParam("role") String role,HttpServletResponse response) throws IOException {

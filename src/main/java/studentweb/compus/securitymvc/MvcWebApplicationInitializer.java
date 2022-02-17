@@ -10,7 +10,6 @@ public class MvcWebApplicationInitializer extends
 	    return new Class[] { WebSecurityConfig.class,JpaConfig.class };
 	  }
 
-	  // Load spring web configuration
 	  @Override
 	  protected Class<?>[] getServletConfigClasses() {
 	    return new Class[] { WebConfig.class };

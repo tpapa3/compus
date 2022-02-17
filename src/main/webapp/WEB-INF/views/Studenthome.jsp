@@ -5,7 +5,7 @@
 <html>
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="<c:url value="/css/studentHome.css"/>" >
 <title>Welcome to our university</title>
 </head>
 <body>
@@ -28,22 +28,16 @@
        </ul>
       </div>    
   </nav>
-     <c:forEach var="course" items="${courses}">
-  <div id="accordion">
-    <div class="card">
-      <div class="card-header">
-        <a class="btn" data-bs-toggle="collapse" href="${'#collapse'+=course.id}">
+  
+  <ul class="list-group">
+     <c:forEach var="course" items="${courses}">   
+        <li class="list-group-item"> 
+        <a href="Student/homework?idc=${course.id}&ids=${student.id}"> 
           <c:out value="${course.name}"></c:out>
         </a>
-      </div>
-      <div id="${'collapse' +=course.id}" class="collapse" data-bs-parent="#accordion">
-        <div class="card-body">
-            <c:out value="${course.content}"></c:out>
-        </div>
-      </div>
-    </div>
-</div>
+        </li>
    </c:forEach>
+   </ul>
    
    <br/>
  <div class="container">

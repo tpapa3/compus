@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 function addCourse(studentId,courseId){
 	
 	var request = new XMLHttpRequest();

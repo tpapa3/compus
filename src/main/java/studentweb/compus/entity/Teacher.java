@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Teacher {
     
 
-	private static final long serialVersionUID = 1L;
 	private int id;
 	private String firstname;
 	private String surname;
