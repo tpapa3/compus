@@ -6,6 +6,12 @@
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 <title>Welcome to our university</title>
+<style>
+.divCourse{
+   border: 2px outset blue;
+   background-color: yellow;
+}
+</style>
 </head>
  <body>
 
@@ -25,6 +31,7 @@
       </div>    
   </nav>
   
+  <div class="divCourse">
   <c:set var="name" value="${course.name }"/>
   <c:forEach  items="${courses}" var="courseAll">
   <c:if test="${courseAll.name==name}">
@@ -35,7 +42,8 @@
   </div>
   </c:if>
   </c:forEach>
-  
+  </div>
+  <br/>
   <p>The files have been uploaded until now</p>  
   
    <table class="table" id="table1">

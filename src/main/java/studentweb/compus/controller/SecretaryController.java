@@ -32,19 +32,22 @@ import studentweb.compus.repository.CourseRepository;
 import studentweb.compus.repository.SecretaryRepository;
 import studentweb.compus.repository.StudentRepository;
 import studentweb.compus.repository.TeacherRepository;
+import studentweb.compus.service.SecretaryService;
+import studentweb.compus.service.StudentService;
+import studentweb.compus.service.TeacherService;
 
 @Controller
 @RequestMapping("/Secretary")
 public class SecretaryController {
     
 	@Autowired
-	private TeacherRepository teacherrepo;
+	private TeacherService teacherserv;
 	@Autowired
 	private CourseRepository courserepo;
 	@Autowired
-	private StudentRepository studentrepo;
+	private StudentService studentserv;
 	@Autowired
-	private SecretaryRepository secretaryrepo;
+	private SecretaryService secretaryserv;
 	@PersistenceContext
 	EntityManager em;
 	
@@ -52,63 +55,29 @@ public class SecretaryController {
 	@RequestMapping(value="/TeacherPage",method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> TeacherCourse(@RequestParam(name="idt",required=false) String idt,@RequestParam(name="idc",required=false) String idc){
 		
-	    System.out.println(idt+" "+idc);	
-		 int idteacher = Integer.parseInt(idt);
-		 int idcourse=Integer.parseInt(idc);
-	     Optional<Teacher> teacher = teacherrepo.findById(idteacher);
-		 Teacher tutor=teacher.get();
-		 Optional<Course> course=courserepo.findById(idcourse);
-		 Course elearning = course.get();
-		if(tutor!=null && elearning!=null) {
-		elearning.getTeachers().add(tutor);
-		tutor.getCourses().add(elearning);
-		
-	     if(tutor.getId()>=0 && elearning.getId()>=0) {
-	      em.createNativeQuery("insert into teacher_course(course_id,teacher_id)"+
-	      "values(:a,:b)").setParameter("a",elearning.getId())
-	                      .setParameter("b", tutor.getId());
-	     }else {
-	    	 System.out.println("Something went wrong with data of those tables");
-	     }
-	   }else {
-		   System.out.println("not found in database");
-	   }
+	     Teacher teacher = teacherserv.findByid(Integer.parseInt(idt));	 
+		 Course course=courserepo.findById(Integer.parseInt(idc)).get();
+		 
+		 secretaryserv.teacherCourse(teacher,course);
+		 
 		return ResponseEntity.status(HttpStatus.OK).body("the data saved in database");
 	}
 	@RequestMapping(value="/StudentPage",method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> StudentCourse(@RequestParam(name="ids",required=false) String ids, @RequestParam(name="idc",required=false) String idc){
 		
-		
-	    System.out.println(ids+" "+idc);	
-		 int idtudent = Integer.parseInt(ids);
-		 int idcourse=Integer.parseInt(idc);
-	     Optional<Student> student = studentrepo.findById(idtudent);
-		 Student stud= student.get();
-		 Optional<Course> course=courserepo.findById(idcourse);
-		 Course elearning = course.get();
-		if(stud!=null && elearning!=null) {
-		elearning.getStudents().add(stud);
-		stud.getCourses().add(elearning);
-		
-	     if(stud.getId()>=0 && elearning.getId()>=0) {
-	      em.createNativeQuery("insert into student_course(course_id,student_id)"+
-	      "values(:a,:b)").setParameter("a",elearning.getId())
-	                      .setParameter("b", stud.getId());
-	     }else {
-	    	 System.out.println("Something went wrong with data of those tables");
-	     }
-	   }else {
-		   System.out.println("not found in database");
-	   }
-
+	     Student student = studentserv.findByid(Integer.parseInt(ids));
+		 Course course=courserepo.findById(Integer.parseInt(idc)).get();
+		 
+		 secretaryserv.studentCourse(student,course);
+		 
 		return ResponseEntity.status(HttpStatus.OK).body("the data saved in database");
 	}
 	
 	@RequestMapping(value="/update", method=RequestMethod.GET)
 	public String SecretaryUpdate(@RequestParam String id,Model model) {
-		Optional<Secretary> secretary= secretaryrepo.findById(Integer.parseInt(id));
-		Secretary employee = secretary.get();
-		model.addAttribute("secretary",employee);
+		Secretary secretary= secretaryserv.findByid(Integer.parseInt(id));
+		
+		model.addAttribute("secretary",secretary);
 		return "register";
 		
 	}
@@ -116,22 +85,13 @@ public class SecretaryController {
 	public void SecretaryUpload(@RequestParam String id,@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
 			 @RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password,
 			 @RequestParam("role") String role,HttpServletResponse response) throws IOException {
-		        Secretary secretary= secretaryrepo.findById(Integer.parseInt(id)).get();
-                secretary.setEmail(email);
-                secretary.setName(firstname);
-                secretary.setSurname(surname);
-                secretary.setUsername(username);
-                secretary.setPassword(passwordEncoder().encode(password));
-                secretary.setRole(role);
-                em.merge(secretary);
+		       
+	    
+		   secretaryserv.update(id,firstname,surname,email,username,password, role);
                  
 		   response.sendRedirect("/login");
 	}
-	private BCryptPasswordEncoder passwordEncoder() {
-		// TODO Auto-generated method stub
-		return new BCryptPasswordEncoder();
-	}
-	
+
 	@RequestMapping(value="/logout",method=RequestMethod.GET)
 	public void SecretaryLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session= request.getSession(false);

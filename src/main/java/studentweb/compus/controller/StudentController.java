@@ -34,31 +34,31 @@ import studentweb.compus.entity.Student;
 import studentweb.compus.repository.CourseRepository;
 import studentweb.compus.repository.StudentRepository;
 import studentweb.compus.service.DocStorageService;
+import studentweb.compus.service.StudentService;
 
 @Controller
 @RequestMapping("/Student")
 public class StudentController {
 	
 	@Autowired
-	private StudentRepository studentrepo;
+	private StudentService studentserv;
 	@Autowired
 	private CourseRepository courserepo;
 	@Autowired
 	private DocStorageService  docservice;
-	@PersistenceContext
-	 EntityManager em;
+	
 
 @RequestMapping(value="/update", method=RequestMethod.GET)
 public String StudentUpdate(@RequestParam String id,Model model) {
-	Optional<Student> student= studentrepo.findById(Integer.parseInt(id));
-	Student std = student.get();
-	model.addAttribute("student",std);
+	Student student= studentserv.findByid(Integer.parseInt(id));
+	
+	model.addAttribute("student",student);
 	return "register";
 	
 }
 @RequestMapping(value="/courses", method=RequestMethod.GET)
 public String StudentCourse(@RequestParam String id,Model model) {
-	Student student = studentrepo.findById(Integer.parseInt(id)).get();
+	Student student = studentserv.findByid(Integer.parseInt(id));
 	Set<Course> studentCourses= student.getCourses();
 	List<Course> courses=courserepo.findAll();
 	model.addAttribute("courses", courses);
@@ -71,48 +71,28 @@ public String StudentCourse(@RequestParam String id,Model model) {
 public ResponseEntity<Course> AddCourse(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false) String ids) 
 {
 	Course course = courserepo.findById(Integer.parseInt(idc)).get();
-	Student student = studentrepo.findById(Integer.parseInt(ids)).get();
-	Set<Course> studentCourses= student.getCourses();
-	for(Course stdCourse: studentCourses) {
-	   if(course == stdCourse) {
-		System.out.println("Choose other course");
-		course=null;
-	   }
-	}
+	Student student = studentserv.findByid(Integer.parseInt(ids));
+	Course newCourse =studentserv.addCourse(course, student);
 	
-     if(course!=null) {
-		studentCourses.add(course);
-		course.getStudents().add(student);
-		em.createNativeQuery("insert into student_course(course_id,student_id)"+
-			      "values(:a,:b)").setParameter("a",course.getId())
-			                      .setParameter("b", student.getId());
-	
-	}
-     return ResponseEntity.status(HttpStatus.OK).body(course);
+     return ResponseEntity.status(HttpStatus.OK).body(newCourse);
 }
 
 @RequestMapping(value="/courseDelete", method=RequestMethod.GET)
 public ResponseEntity<Student> DeleteCourse(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false) String ids){
 	 
 	 Course course = courserepo.findById(Integer.parseInt(idc)).get();
-	 Student student = studentrepo.findById(Integer.parseInt(ids)).get();
-	 Set<Course> studentCourses = student.getCourses();
+	 Student student = studentserv.findByid(Integer.parseInt(ids));
 	 
-	Query q =em.createNativeQuery("DELETE FROM student_course sc where sc.course_id=? and sc.student_id=?");
-	q.setParameter(1, course.getId());
-	q.setParameter(2, student.getId());
-
+	 Student deleteStudentCourse =studentserv.deleteCourse(course,student);
 	
-	studentCourses.remove(course);
-	course.getStudents().remove(student);
 	
-	return ResponseEntity.status(HttpStatus.OK).body(student);
+	return ResponseEntity.status(HttpStatus.OK).body(deleteStudentCourse);
  }
 
 @RequestMapping(value="/homework", method=RequestMethod.GET)
 public String Homework(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="ids",required=false)String ids,Model model) {
 	 Course course = courserepo.findById(Integer.parseInt(idc)).get();
-	 Student student = studentrepo.findById(Integer.parseInt(ids)).get();
+	 Student student = studentserv.findByid(Integer.parseInt(ids));
 	 List<Course> courses= courserepo.findAll();
 	
 	 model.addAttribute("course",course);
@@ -130,24 +110,15 @@ public ResponseEntity<Doc> UploadFile(@RequestParam(value="idc",required=false) 
 }
 
 @RequestMapping(value="/changeData",method=RequestMethod.POST)
-public void StudentUpload(@RequestParam String id,@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
+public void StudentUpdate(@RequestParam String id,@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
 		 @RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password,
 		 @RequestParam("role") String role,HttpServletResponse response) throws IOException {
-	     Student student= studentrepo.findById(Integer.parseInt(id)).get();
-         student.setEmail(email);
-         student.setName(firstname);
-         student.setSurname(surname);
-         student.setUsername(username);
-         student.setPassword(passwordEncoder().encode(password));
-         student.setRole(role);
-         em.merge(student);
-          
+	
+	     studentserv.update(id,firstname,surname,email,username,password, role);
+    
 	   response.sendRedirect("/login");
 }
-private BCryptPasswordEncoder passwordEncoder() {
-	// TODO Auto-generated method stub
-	return new BCryptPasswordEncoder();
-}
+
 
 @RequestMapping(value="/logout",method=RequestMethod.GET)
 public void StudentLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {

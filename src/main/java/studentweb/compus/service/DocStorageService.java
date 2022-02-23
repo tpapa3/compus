@@ -1,27 +1,18 @@
 package studentweb.compus.service;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import studentweb.compus.entity.Course;
 import studentweb.compus.entity.Doc;
 import studentweb.compus.entity.Student;
 import studentweb.compus.exception.FileStorageException;
-import studentweb.compus.exception.NoDataFoundException;
 import studentweb.compus.repository.CourseRepository;
 import studentweb.compus.repository.DocRepository;
-import studentweb.compus.repository.StudentRepository;
+
 
 @Service
 public class DocStorageService {
@@ -31,9 +22,8 @@ public class DocStorageService {
 	@Autowired
 	private CourseRepository courserepo;
 	@Autowired
-	private StudentRepository studentrepo;
-	@PersistenceContext
-	EntityManager em;
+	private StudentService studentserv;
+	
 	
 	  public Doc storeFile(String courseId,String studentId,MultipartFile file) {
            
@@ -46,7 +36,7 @@ public class DocStorageService {
 	            }
 	            Doc docfile = new Doc(file.getBytes(),fileName,file.getContentType());
 	            Course course = courserepo.findById(Integer.parseInt(courseId)).get();
-	            Student student = studentrepo.findById(Integer.parseInt(studentId)).get();         
+	            Student student = studentserv.findByid(Integer.parseInt(studentId));         
 	            docfile.setCourse(course); 
 	            docfile.setStudent(student);
 	            Doc dbfile = docRepository.save(docfile);
@@ -64,14 +54,10 @@ public class DocStorageService {
 	    }
         
 	 
-	    public Doc getFile(String fileId) throws FileNotFoundException {
-	    	
-         Doc dbfile=docRepository.findById(Integer.parseInt(fileId)).get();
-	          
-	     if(dbfile==null) {
-	    	 throw new FileNotFoundException("File not found with id"+fileId);
-	     }
-	   
+	    public Doc getFile(String fileId)  {
+	           
+	     Doc dbfile=docRepository.findById(Integer.parseInt(fileId)).get();   
+	    
 	     return dbfile;
 	    }
 	    

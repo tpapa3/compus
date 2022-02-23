@@ -1,7 +1,8 @@
 package studentweb.compus.exception;
 
-import java.io.FileNotFoundException;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,15 +22,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler{
 
 	        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(message);
 	    }
-	    
-
-	    @ExceptionHandler(FileNotFoundException.class)
-	    public ResponseEntity<String> handleFileFoundException(FileNotFoundException ex) {
-	    	String message = ex.getMessage();
-
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
-	    }
-	    
+	    	    
 
 	    @ExceptionHandler(FileStorageException.class)
 	    public ResponseEntity<String> handleFileStoreException(FileStorageException ex) {
@@ -37,21 +30,18 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler{
 
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
 	    }
-	    
-	    @ExceptionHandler(NoDataFoundException.class)
-	    public ResponseEntity<String> handleFileAllException(NoDataFoundException ex) {
-	    	String message = ex.getMessage();
-
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+	   
+	    @ExceptionHandler(value = UsernameNotFoundException.class)
+	    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+	        
+	        return  ResponseEntity.status( HttpStatus.NOT_FOUND).body(ex.getMessage());
 	    }
 	    
-	    @ExceptionHandler(UsernameNotFoundException.class)
-	    public ResponseEntity<String> handleUsernameNotFoundException(NoDataFoundException ex) {
+	    @ExceptionHandler(DataIntegrityViolationException.class)
+	    public ResponseEntity<String> handleNullValue(DataIntegrityViolationException ex) {
 	    	String message = ex.getMessage();
 
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
 	    }
-	    
-	    
 
 }

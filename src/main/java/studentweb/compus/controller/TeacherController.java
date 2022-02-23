@@ -34,13 +34,14 @@ import studentweb.compus.entity.Teacher;
 import studentweb.compus.repository.CourseRepository;
 import studentweb.compus.repository.TeacherRepository;
 import studentweb.compus.service.DocStorageService;
+import studentweb.compus.service.TeacherService;
 
 @Controller
 @RequestMapping("/Teacher")
 public class TeacherController {
 
 	@Autowired
-	private TeacherRepository teacherrepo;
+	private TeacherService teacherserv;
 	@Autowired
 	private DocStorageService docservice; 
 	@Autowired
@@ -50,9 +51,9 @@ public class TeacherController {
 
 @RequestMapping(value="/update", method=RequestMethod.GET)
 public String TeacherUpdate(@RequestParam String id,Model model) {
-	Optional<Teacher> teacher= teacherrepo.findById(Integer.parseInt(id));
-	Teacher tch = teacher.get();
-	model.addAttribute("teacher",tch);
+	Teacher teacher= teacherserv.findByid(Integer.parseInt(id));
+	
+	model.addAttribute("teacher",teacher);
 	return "register";
 	
 }
@@ -60,14 +61,8 @@ public String TeacherUpdate(@RequestParam String id,Model model) {
 public void TeacherUpload(@RequestParam String id,@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
 		 @RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password,
 		 @RequestParam("role") String role,HttpServletResponse response) throws IOException {
-	     Teacher teacher= teacherrepo.findById(Integer.parseInt(id)).get();
-         teacher.setEmail(email);
-         teacher.setName(firstname);
-         teacher.setSurname(surname);
-         teacher.setUsername(username);
-         teacher.setPassword(passwordEncoder().encode(password));
-         teacher.setRole(role);
-         em.merge(teacher);
+	     
+	   teacherserv.update(id,firstname,surname,email,username,password, role);
           
 	   response.sendRedirect("/login");
 }
@@ -75,7 +70,7 @@ public void TeacherUpload(@RequestParam String id,@RequestParam("firstname") Str
 @RequestMapping(value="/homework", method=RequestMethod.GET)
 public String Homework(@RequestParam(value="idc",required=false) String idc,@RequestParam(value="idt",required=false)String idt,Model model) {
 	 
-	 Teacher teacher = teacherrepo.findById(Integer.parseInt(idt)).get();
+	 Teacher teacher = teacherserv.findByid(Integer.parseInt(idt));
 	 Course course = courserepo.findById(Integer.parseInt(idc)).get();
 	 List<Course> courses = courserepo.findAll();
 	 Set<Doc> files = docservice.getFiles(idc);
@@ -91,25 +86,19 @@ public String Homework(@RequestParam(value="idc",required=false) String idc,@Req
 @RequestMapping(value="/downloadfile/{id}",method=RequestMethod.GET)
 public ResponseEntity<ByteArrayResource> getFile(@PathVariable String id)  {
   Doc fileDB = null;
-try {
-	fileDB = docservice.getFile(id);
-} catch (FileNotFoundException e) {
-	e.printStackTrace();
-}
+  fileDB = docservice.getFile(id);
+
   return ResponseEntity.ok()
 	  .contentType(MediaType.parseMediaType(fileDB.getDocType()))
       .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getDocName() + "\"")
       .body(new ByteArrayResource(fileDB.getData()));
 }
 
-private BCryptPasswordEncoder passwordEncoder() {
-	return new BCryptPasswordEncoder();
-}
 
 @RequestMapping(value="/logout",method=RequestMethod.GET)
 public void TeacherLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	HttpSession session= request.getSession(false);
-    SecurityContextHolder.getContext().setAuthentication(null);
+    SecurityContextHolder.clearContext();
         if(session != null) {
             session.invalidate();
         }

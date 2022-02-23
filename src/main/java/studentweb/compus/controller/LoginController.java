@@ -18,26 +18,24 @@ import studentweb.compus.entity.Student;
 import studentweb.compus.entity.Teacher;
 import studentweb.compus.repository.CourseRepository;
 import studentweb.compus.repository.SecretaryRepository;
-import studentweb.compus.repository.StudentRepository;
 import studentweb.compus.repository.TeacherRepository;
 import studentweb.compus.securitymvc.CustomUserDetails;
+import studentweb.compus.service.SecretaryService;
+import studentweb.compus.service.StudentService;
+import studentweb.compus.service.TeacherService;
 
 
 @Controller
 public class LoginController {
 	
 	@Autowired
-	private StudentRepository studentrepo;
+	private StudentService studentserv;
 	@Autowired
-	private TeacherRepository teacherepo;
+	private TeacherService teacherserv;
 	@Autowired
-	private SecretaryRepository secretaryrepo;
+	private SecretaryService secretaryserv;
 	@Autowired
 	private CourseRepository courserepo;
-	
-	private  PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	 public String welcome() {
@@ -47,16 +45,13 @@ public class LoginController {
 		 public String welcomeAgain(@RequestParam("firstname") String firstname, @RequestParam("lastname") String surname,
 				 @RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password,@RequestParam("role") String role ) {
 		        if(role.equalsIgnoreCase("Student")) {
-		        	Student student = new Student(email,firstname,passwordEncoder().encode(password),role.toUpperCase(),surname,username);
-		        	studentrepo.save(student);
+		        	studentserv.save(firstname, surname, email, username, password, role);
 		        }
 		        else if(role.equalsIgnoreCase("Secretary")) {
-		        	Secretary secretary = new Secretary(email,firstname,passwordEncoder().encode(password),role.toUpperCase(),surname,username);
-		        	secretaryrepo.save(secretary);
+		        	secretaryserv.save(firstname, surname, email, username, password, role);
 		        }
 		        else if(role.equalsIgnoreCase("Teacher")) {
-		        	Teacher teacher = new Teacher(email,firstname,passwordEncoder().encode(password),role.toUpperCase(),surname,username);
-		        	teacherepo.save(teacher);
+		        	teacherserv.save(firstname, surname, email, username, password, role);
 		        }
 		        
 			    return "welcome";
@@ -67,7 +62,8 @@ public class LoginController {
 	 public String Studentpage(Model model, Authentication authentication) {
 		CustomUserDetails userdetails=(CustomUserDetails) authentication.getPrincipal();
 		String username = userdetails.getUsername();
-		Student student = studentrepo.findByUsername(username);
+		Student student = studentserv.findByusername(username);
+		System.out.println(student);
 	    Set<Course> courses = student.getCourses();
 	    model.addAttribute("courses", courses);
 	    model.addAttribute("student",student);
@@ -77,12 +73,12 @@ public class LoginController {
 	
 	@RequestMapping(value="/Secretary", method=RequestMethod.GET)
 	 public String Secretarypage(Model model,Authentication authentication) {
-		List<Student> students=studentrepo.findAll();
-		List<Teacher> teachers=teacherepo.findAll();
+		List<Student> students=studentserv.findAllStudent();
+		List<Teacher> teachers=teacherserv.findAllTeacher();
 		List<Course> courses=courserepo.findAll();
 		CustomUserDetails userdetails=(CustomUserDetails) authentication.getPrincipal();
 		String username = userdetails.getUsername();
-		Secretary secretary=secretaryrepo.findByUsername(username);
+		Secretary secretary=secretaryserv.findByusername(username);
 		model.addAttribute("secretary", secretary);
 		model.addAttribute("students",students);
 		model.addAttribute("teachers", teachers);
@@ -95,7 +91,7 @@ public class LoginController {
 	 public String Teacherpage(Model model,Authentication authentication) {
 		CustomUserDetails userdetails=(CustomUserDetails) authentication.getPrincipal();
 		String username = userdetails.getUsername();
-		Teacher teacher = teacherepo.findByUsername(username);
+		Teacher teacher = teacherserv.findByusername(username);
 	    Set<Course> courses = teacher.getCourses();
 	    model.addAttribute("courses", courses);
 	    model.addAttribute("teacher",teacher);

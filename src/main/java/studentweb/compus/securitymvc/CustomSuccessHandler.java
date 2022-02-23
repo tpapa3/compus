@@ -34,11 +34,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
 
 	  
 	  protected String determineTargetUrl(Authentication authentication) {
-		  
+		    System.out.println(authentication);
 		    String url="";
 	        List<String> roles = new ArrayList<String>();           
             Collection<? extends GrantedAuthority> authorities=authentication.getAuthorities();
-            
+           
             for(GrantedAuthority a:authorities) {
 	            roles.add(a.getAuthority());
             }

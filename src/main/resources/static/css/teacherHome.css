@@ -1,4 +1,4 @@
 
- .list-group-item:hover{
-  background-color:green;
+ .list-group-item:visited{
+  color:green;
  }
