@@ -19,7 +19,6 @@ import studentweb.compus.entity.Student;
 import studentweb.compus.repository.StudentRepository;
 
 @Service
-@Transactional
 public class StudentService {
 	
 	@Autowired

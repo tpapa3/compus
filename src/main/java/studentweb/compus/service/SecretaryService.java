@@ -20,7 +20,6 @@ import studentweb.compus.entity.Teacher;
 import studentweb.compus.repository.SecretaryRepository;
 
 @Service
-@Transactional
 public class SecretaryService {
     
 	@Autowired

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.Cookie;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import studentweb.compus.entity.Course;
 import studentweb.compus.entity.Doc;
 import studentweb.compus.entity.Student;
@@ -48,6 +47,8 @@ public class TeacherController {
 	private CourseRepository courserepo;
 	@PersistenceContext
 	EntityManager em;
+	
+
 
 @RequestMapping(value="/update", method=RequestMethod.GET)
 public String TeacherUpdate(@RequestParam String id,Model model) {
@@ -94,6 +95,13 @@ public ResponseEntity<ByteArrayResource> getFile(@PathVariable String id)  {
       .body(new ByteArrayResource(fileDB.getData()));
 }
 
+@RequestMapping(value="/CourseFileGrade",method=RequestMethod.POST)
+public String CourseGrade(@RequestParam("id") String id,@RequestParam("fileGrade") String fileGrade) {
+	
+	String result = teacherserv.fileGrade(id,fileGrade);
+	
+     return result;
+}
 
 @RequestMapping(value="/logout",method=RequestMethod.GET)
 public void TeacherLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {

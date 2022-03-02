@@ -11,15 +11,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import studentweb.compus.entity.Doc;
 import studentweb.compus.entity.Teacher;
+import studentweb.compus.repository.DocRepository;
 import studentweb.compus.repository.TeacherRepository;
 
 @Service
-@Transactional
 public class TeacherService {
 	
 	@Autowired
     private TeacherRepository teacherepo;
+	
+	@Autowired
+	private DocRepository docrepo;
 	
 	@PersistenceContext
 	EntityManager em;
@@ -62,4 +66,32 @@ public class TeacherService {
 		         em.merge(teacher);
 		          
 			}
+	
+	public String fileGrade(String fileId , String filegrade) {
+		
+	    String result=null;
+	    
+		if(!filegrade.matches("[0-9]+")) {
+		  result="you can put only number in this cell";
+		}else {
+			
+	       int grade = Integer.parseInt(filegrade);
+	    
+	        if(grade < 0 && grade > 10) {
+	    	   result="you can put number between 0-9";
+		    }else {
+			
+			Doc file = docrepo.findById(Integer.parseInt(fileId)).get();
+			file.setGrade(grade);
+			
+			 if(grade >= 5) {
+				 result="pass";
+			 }else {
+				 result="fail";
+			 }
+			 
+		   }
+	}
+		return result;
+ }
 }

@@ -52,7 +52,7 @@ public class ListUserDetailsService implements UserDetailsService {
 				grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+student.getRole()));
 			}
 			return new CustomUserDetails(student.getName(),student.getSurname(),student.getEmail(),student.getUsername(),student.getPassword(),grantedAuthorities);
-		}	
+			}	
 		if(teacher==null) {
 			secretary =secretaryserv.findByusername(username);
 		}else {

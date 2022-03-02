@@ -39,7 +39,9 @@ public class Doc {
 	@JoinColumn(name="course_id",referencedColumnName="id")
 	@JsonBackReference
 	private Course course;
-    
+	
+    private int grade;	
+
 	public Doc() {
 		
 	}
@@ -99,5 +101,12 @@ public class Doc {
 		this.course = course;
 	}
 	
-	
+	public int getGrade() {
+		return grade;
+	}
+
+	public void setGrade(int grade) {
+		this.grade = grade;
+	}
+
 }

@@ -5,6 +5,8 @@
 <html>
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<script src="https:///code.jquery.com//jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="<c:url value="/js/teacherhomework.js" />"></script>
 <title>Welcome to our university</title>
 <style>
 .divCourse{
@@ -54,6 +56,8 @@
       <th scope="col">DownLoad Link</th>
       <th scope="col">StudentName</th>
       <th scope="col">StudentLastName</th>
+      <th scope="col">Grade</th>
+      <th scope="col">Pass or Fail</th>
     </tr>
   </thead>
   </tbody>
@@ -64,6 +68,9 @@
      <td><a href="http://localhost:8080/Teacher/downloadfile/${file.id}">Download</a></td>
      <td>${file.student.getName()}</td>
      <td>${file.student.getSurname()}</td>
+     <td><input type="text" id="grade" name="grade"></td>
+     <td><input type="text" id="result" name="result"></td>
+     <td><button  name="send" id="${file.id }">send</button>
    </tr>
   </c:forEach>
   </tbody>
