@@ -84,7 +84,7 @@ public class TeacherService {
 		    }else {
 			//one way 	
 			Doc file = docserv.getFile(fileId);
-			docserv.updateFileGrade(file, filegrade);
+			docserv.updateFileGrade(file, grade);
 			
 			//two way
 			/*

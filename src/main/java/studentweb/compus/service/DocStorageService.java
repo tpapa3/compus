@@ -69,8 +69,8 @@ public class DocStorageService {
 	    	return files;
 	    } 
 	    
-	    public void updateFileGrade(Doc file,String grade) {
-	    	file.setGrade(Integer.parseInt(grade));;
+	    public void updateFileGrade(Doc file,Integer grade) {
+	    	file.setGrade(grade);
 	    	docRepository.save(file);
 	    }
 }
