@@ -35,7 +35,7 @@ public class DocStorageService {
 	            if(fileName.contains("..")) {
 	                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
 	            }
-	            Doc docfile = new Doc(file.getBytes(),fileName,file.getContentType());
+	            Doc docfile = new Doc(file.getBytes(),fileName,file.getContentType(),0);
 	            Course course = courserepo.findById(Integer.parseInt(courseId)).get();
 	            Student student = studentserv.findByid(Integer.parseInt(studentId));         
 	            docfile.setCourse(course); 

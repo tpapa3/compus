@@ -40,6 +40,7 @@ public class Doc {
 	@JsonBackReference
 	private Course course;
 	
+	@Column(name="grade")
     private int grade;	
 
 	public Doc() {
