@@ -46,10 +46,11 @@ public class Doc {
 		
 	}
 	
-	public Doc(byte[] data,String docName,String docType) {
+	public Doc(byte[] data,String docName,String docType,int grade) {
 		this.data = data;
 		this.docName = docName;
 		this.docType = docType;
+		this.grade=grade;
 	}
 
 	public int getId() {

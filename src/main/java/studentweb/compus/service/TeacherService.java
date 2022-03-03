@@ -3,6 +3,8 @@ package studentweb.compus.service;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -83,6 +85,9 @@ public class TeacherService {
 			
 			Doc file = docrepo.findById(Integer.parseInt(fileId)).get();
 			file.setGrade(grade);
+			Query q	= em.createNativeQuery("Update doc d set d.grade=? where d.id=?");
+			q.setParameter(1, grade);
+			q.setParameter(2, Integer.parseInt(fileId));
 			
 			 if(grade >= 5) {
 				 result="pass";
