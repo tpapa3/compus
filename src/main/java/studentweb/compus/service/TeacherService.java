@@ -25,7 +25,7 @@ public class TeacherService {
     private TeacherRepository teacherepo;
 	
 	@Autowired
-	private DocRepository docrepo;
+	private DocStorageService docserv;
 	
 	@PersistenceContext
 	EntityManager em;
@@ -83,9 +83,8 @@ public class TeacherService {
 	    	   result="you can put number between 0-9";
 		    }else {
 			//one way 	
-			Doc file = docrepo.findById(Integer.parseInt(fileId)).get();
-			file.setGrade(grade);
-			docrepo.save(file);
+			Doc file = docserv.getFile(fileId);
+			docserv.updateFileGrade(file, filegrade);
 			
 			//two way
 			/*
