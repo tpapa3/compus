@@ -69,7 +69,7 @@ public class DocStorageService {
 	    	return files;
 	    } 
 	    
-	    public void updateFileGrade(Doc file,Integer grade) {
+	    public void updateFileGrade(Doc file,int grade) {
 	    	file.setGrade(grade);
 	    	docRepository.save(file);
 	    }
