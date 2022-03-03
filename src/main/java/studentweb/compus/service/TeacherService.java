@@ -82,9 +82,13 @@ public class TeacherService {
 	        if(grade < 0 && grade > 10) {
 	    	   result="you can put number between 0-9";
 		    }else {
-			
+			//one way
+		   /* 	
 			Doc file = docrepo.findById(Integer.parseInt(fileId)).get();
 			file.setGrade(grade);
+			docrepo.save(file);
+			*/
+			//two way
 			Query q	= em.createNativeQuery("Update doc d set d.grade=? where d.id=?");
 			q.setParameter(1, grade);
 			q.setParameter(2, Integer.parseInt(fileId));
